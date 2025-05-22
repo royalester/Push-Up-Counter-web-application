@@ -1,0 +1,91 @@
+/* Reset & base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.card h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Container for reps and sets counters */
+.counters {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+/* Each counter block */
+.counter-block {
+  flex: 1;
+  margin: 0 10px;
+  background: #f3f4f6;
+  border-radius: 15px;
+  padding: 20px 0;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+}
+
+/* Label for each counter */
+.counter-block h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 8px;
+}
+
+/* Number styling */
+.counter-block span {
+  font-size: 48px;
+  font-weight: 800;
+  color: #4f46e5;
+  display: block;
+}
+
+button#resetBtn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button#resetBtn:hover {
+  background-color: #dc2626;
+}
+
+/* Message */
+.card .message {
+  font-size: 14px;
+  color: #666;
+}

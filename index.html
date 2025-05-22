@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Push-Up Counter</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- ✅ Load compat version only ONCE -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🏋️ Push-Up Counter</h1>
+      
+      <h2>Reps: <span id="repCounter">0</span> / 12</h2>
+      <h2>Sets: <span id="setCounter">0</span> / 3</h2>
+      <button id="resetBtn">🔄 Reset</button>
+
+      <p class="message">Stay strong! Every rep counts.</p>
+    </div>
+  </div>
+
+  <script>
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB4pACVnLG19oMiUak35Gw-POzrvJdlTbQ",
+      authDomain: "push-up-counter-222f7.firebaseapp.com",
+      databaseURL: "https://push-up-counter-222f7-default-rtdb.firebaseio.com",
+      projectId: "push-up-counter-222f7",
+      storageBucket: "push-up-counter-222f7.appspot.com",
+      messagingSenderId: "597185830050",
+      appId: "1:597185830050:web:d5a2b1cd463101455d8bfb"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const repCounterElem = document.getElementById("repCounter");
+    const setCounterElem = document.getElementById("setCounter");
+
+    // Reference values in Firebase
+    const repsRef = db.ref("pushups/count");
+    const setsRef = db.ref("pushups/sets");
+
+    repsRef.on("value", (snapshot) => {
+      const reps = snapshot.val() || 0;
+      repCounterElem.innerText = reps;
+    });
+
+    setsRef.on("value", (snapshot) => {
+      const sets = snapshot.val() || 0;
+      setCounterElem.innerText = sets;
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+  firebase.database().ref("pushups").update({
+    count: 0,
+    sets: 0,
+    reset: true
+  }).then(() => {
+    console.log("Reps and sets have been reset.");
+  }).catch((error) => {
+    console.error("Reset failed:", error);
+  });
+});
+
+  </script>
+</body>
+
+</html>
