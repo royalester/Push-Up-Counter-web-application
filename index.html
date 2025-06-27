@@ -16,12 +16,58 @@
       <h2>Reps: <span id="repCounter">0</span> / 12</h2>
       <h2>Sets: <span id="setCounter">0</span> / 3</h2>
       <button id="resetBtn">🔄 Reset</button>
+      <button id="muteToggle">Mute Voice</button>
 
       <p class="message">Stay strong! Every rep counts.</p>
     </div>
   </div>
 
   <script>
+    let voiceMuted = false;
+    let selectedVoice = null;
+    let voicePitch = 1;   // Normal pitch
+    let voiceRate = 1;    // Normal speed
+    let voiceVolume = 1;  // Max volume
+
+  // Load and select voices
+  function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+
+  // Try to find a voice with "female" or typical female names
+  selectedVoice = voices.find(v =>
+    /female|samantha|victoria|zira|karen/i.test(v.name)
+  ) || voices[0]; // fallback to the first voice
+}
+  // function loadVoices() {
+  //   const voices = speechSynthesis.getVoices();
+  //   selectedVoice = voices.find(v => v.name.toLowerCase().includes("female")) || voices[0];
+  // }
+
+  speechSynthesis.onvoiceschanged = loadVoices;
+
+    // Voice function
+    function speak(text) {
+    if (voiceMuted || !text) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.pitch = voicePitch;
+    utterance.rate = voiceRate;
+    utterance.volume = voiceVolume;
+    if (selectedVoice) utterance.voice = selectedVoice;
+    window.speechSynthesis.speak(utterance);
+  }
+  // function speak(text) {
+  //   const speech = new SpeechSynthesisUtterance(text);
+  //   speech.lang = "en-US";
+  //   window.speechSynthesis.speak(speech);
+  // }
+
+  // Mute toggle
+  document.getElementById("muteToggle").addEventListener("click", () => {
+    voiceMuted = !voiceMuted;
+    document.getElementById("muteToggle").innerText = voiceMuted ? "Unmute Voice" : "Mute Voice";
+  });
+    
     // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyB4pACVnLG19oMiUak35Gw-POzrvJdlTbQ",
@@ -44,15 +90,52 @@
     const repsRef = db.ref("pushups/count");
     const setsRef = db.ref("pushups/sets");
 
+    let lastRep = -1;
+    let lastSet = -1; 
+
     repsRef.on("value", (snapshot) => {
       const reps = snapshot.val() || 0;
       repCounterElem.innerText = reps;
+
+      // Speak only when reps change
+    if (reps !== lastRep) {
+      if (reps > 0 && reps <= 12) {
+        speak(`${reps}`);
+      } else if (reps === 0 && lastRep === 12) {
+        speak(`Set complete`);
+      }
+      else if (reps > 12) {
+        speak(`Great job! You've completed ${Math.floor(reps / 12)} sets.`);
+      }
+      else if (reps === 0) {
+        speak("Workout complete. Great job!");
+      }
+      else if (reps > 0 && reps < 12) {
+        speak(`Keep going! ${12 - reps} reps left.`);
+      }
+      else if (reps === 12) {
+        speak("Great job! You've completed a set.");
+      }
+      lastRep = reps;
+    }
     });
 
     setsRef.on("value", (snapshot) => {
       const sets = snapshot.val() || 0;
       setCounterElem.innerText = sets;
+
+       // Speak only when sets change
+    if (sets !== lastSet) {
+      if (sets > 0 && sets < 3) {
+        speak(`Set ${sets} complete. Start the next set.`);
+      } else if (sets === 3) {
+        speak("Workout complete. Great job!");
+      } 
+      lastSet = sets;
+    }
     });
+
+    
 
     document.getElementById("resetBtn").addEventListener("click", () => {
   firebase.database().ref("pushups").update({
